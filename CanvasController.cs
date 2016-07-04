@@ -7,25 +7,27 @@ public class CanvasController : MonoBehaviour {
 	public Text topLineObject;
 	public Text bottomLineObject;
 	public Text clockObject;
+
+	public GameObject ift;
+	public GameObject ifb;
+
 	MemeGenerator memeGenerator;
-	Timer timer;
 
 	// Use this for initialization
 	void Start () {
-		timer = FindObjectOfType<Timer>();
 
 		memeGenerator = FindObjectOfType<MemeGenerator>();
 		memeGenerator.cbTopLineChanged += ChangeUITextTop;
 		memeGenerator.cbBottomLineChanged += ChangeUITextBottom;
-		timer.cbTimeIsAlmostUp += OnTimeIsAlmostUp;
+		memeGenerator.timer.cbTimeIsAlmostUp += OnTimeIsAlmostUp;
+
+		ift = GameObject.Find("InputFieldTop");
+		ifb = GameObject.Find("InputFieldBottom");
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (timer == null) {
-			timer = FindObjectOfType<Timer>();
-		}
-		int timeLeft = Mathf.CeilToInt( timer.totalTime - timer.timePassed );
+		int timeLeft = Mathf.CeilToInt( memeGenerator.timer.totalTime - memeGenerator.timer.timePassed );
 		if (timeLeft < 0) {
 			timeLeft = 0;
 		}

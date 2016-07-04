@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class SoundController : MonoBehaviour {
 
@@ -11,24 +12,29 @@ public class SoundController : MonoBehaviour {
 	public AudioClip tickingClock;
 
 	MemeGenerator memeGenerator;
-	Timer timer;
+	VoteController voteController;
 
 	// Use this for initialization
 	void Start () {
 		sfx = GetComponent<AudioSource>();
-		memeGenerator = FindObjectOfType<MemeGenerator>();
-		timer = FindObjectOfType<Timer>();
 
-		// registering the sounds to actions
-		timer.cbTimeIsAlmostUp += PlayTimesUpSound;
-		timer.cbTimesUp += OnTimesUp;
+		memeGenerator = FindObjectOfType<MemeGenerator>();
+		if (memeGenerator != null) {
+			memeGenerator.timer.cbTimeIsAlmostUp += PlayTimesUpSound;
+			memeGenerator.timer.cbTimesUp += OnTimesUp;
+		}
+
+		voteController = FindObjectOfType<VoteController>();
+		if (voteController != null) {
+			voteController.timer.cbTimeIsAlmostUp += PlayTimesUpSound;
+			voteController.timer.cbTimesUp += OnTimesUp;
+		}
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		waitTimeCounter -= Time.deltaTime;
-
-
 	}
 
 	void PlaySound (AudioClip sound) {

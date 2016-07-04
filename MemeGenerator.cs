@@ -2,13 +2,17 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 public class MemeGenerator : MonoBehaviour {
 
 	Meme levelMeme;
+	CanvasController canvasController;
 
 	public Timer timer;
 	bool gameIsOn = true;
+
+	public bool memePosted = false;
 
 	Sprite levelPicture;
 	string topLine;
@@ -19,26 +23,29 @@ public class MemeGenerator : MonoBehaviour {
 	public Action<String> cbBottomLineChanged;
 
 	void Awake () {
-		timer = FindObjectOfType<Timer>();
-		timer.totalTime = 9f;
-		timer.endTime = 11f;
+		timer = new Timer(Time.time, 9, 6);
 	}
 	// Use this for initialization
 	void Start () {
 		cbMemeCreated += ShowDebug;
+
 		timer.cbTimesUp += OnTimeUp;
+		canvasController = FindObjectOfType<CanvasController>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+		timer.UpdateTime(Time.time);
 	}
 
-	public void CreateMeme () {
+	public void CreateMeme (Button button) {
 		Meme meme = new Meme (topLine, bottomLine, levelPicture);
 		if (cbMemeCreated != null) {
 			cbMemeCreated(meme);
 		}
+
+		memePosted = !memePosted;
+		ChangeButtonColor(button);
 	}
 
 	void ShowDebug (Meme meme) {
@@ -69,7 +76,30 @@ public class MemeGenerator : MonoBehaviour {
 
 	void OnTimeUp () {
 		Debug.Log("Moving Scene");
-		SceneManager.LoadScene(1);
+		SceneManager.LoadScene("Voting");
+	}
+
+	public void ChangeButtonColor (Button button) {
+		Debug.Log("Changing the button color!");
+		Color newColor;
+		String buttonText;
+
+
+		if (memePosted) {
+			newColor = Color.red;
+			buttonText = "Undo";
+
+			canvasController.ift.SetActive(false);
+			canvasController.ifb.SetActive(false);
+		}
+		else {
+			newColor = Color.blue;
+			buttonText = "Post";
+			canvasController.ift.SetActive(true);
+			canvasController.ifb.SetActive(true);
+		}
+		button.image.color = newColor;
+		button.GetComponentInChildren<Text>().text = buttonText;
 	}
 }
 
